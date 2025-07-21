@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VerificacionScreen extends StatefulWidget {
   const VerificacionScreen({super.key});
@@ -19,6 +20,12 @@ class _VerificacionScreenState extends State<VerificacionScreen> {
     await user?.reload();
 
     if (user != null && user.emailVerified) {
+      // 🔁 ACTUALIZAR FIRESTORE
+      await FirebaseFirestore.instance
+          .collection('estudiantes')
+          .doc(user.uid)
+          .update({'verificado': true});
+
       setState(() => verificado = true);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -57,7 +64,6 @@ class _VerificacionScreenState extends State<VerificacionScreen> {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // Navegar al WelcomeScreen (reemplaza con tu ruta)
                         Navigator.pushReplacementNamed(context, '/welcome');
                       },
                       child: const Text('Ir al inicio'),
