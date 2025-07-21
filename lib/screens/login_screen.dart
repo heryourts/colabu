@@ -1,8 +1,8 @@
+import 'package:colabu/screens/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import '../../providers/auth_provider.dart';
-import 'check_verification_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,10 +27,19 @@ class _LoginScreenState extends State<LoginScreen> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.iniciarSesion(email, password);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const CheckVerificationScreen()),
-      );
+      final user = FirebaseAuth.instance.currentUser;
+      await user?.reload(); // Asegura que el estado esté actualizado
+
+      if (user != null && !user.emailVerified) {
+        // Si no está verificado, ir a pantalla de verificación
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const VerificacionScreen()),
+        );
+      } else {
+        // Si está verificado, ir al home
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } catch (e) {
       setState(() => cargando = false);
       ScaffoldMessenger.of(context).showSnackBar(

@@ -83,14 +83,6 @@ class AuthProvider with ChangeNotifier {
     final user = _auth.currentUser;
     await user?.reload();
 
-    if (user != null && !user.emailVerified) {
-      await _auth
-          .signOut(); // Opcional: cierra sesión para no dejar usuario sin verificar activo
-      throw Exception(
-        'Por favor verifica tu correo electrónico antes de iniciar sesión.',
-      );
-    }
-
     final uid = cred.user!.uid;
 
     // El resto del código para cargar datos de Firestore...
