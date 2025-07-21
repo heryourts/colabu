@@ -1,3 +1,4 @@
+import 'package:colabu/screens/verification_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,6 +6,8 @@ import 'package:provider/provider.dart';
 
 import 'providers/auth_provider.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/home_screen.dart'; // Importa tu HomeScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +37,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: WelcomeScreen(),
+        initialRoute: '/welcome', // Puedes cambiar la pantalla inicial
+        routes: {
+          '/welcome': (context) => const WelcomeScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/home': (context) => const HomeScreen(),
+          '/checkVerification': (context) => const VerificacionScreen(),
+        },
       ),
     );
   }
