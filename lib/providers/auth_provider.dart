@@ -53,26 +53,6 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> registrarTutor(
-    String nombre,
-    String email,
-    String password,
-  ) async {
-    final cred = await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    final usuario = Usuario(
-      uid: cred.user!.uid,
-      email: email,
-      nombre: nombre,
-      tipo: 'tutor',
-    );
-    await _db.collection('usuarios').doc(usuario.uid).set(usuario.toMap());
-    usuarioActual = usuario;
-    notifyListeners();
-  }
-
   Future<void> iniciarSesion(String email, String password) async {
     final cred = await _auth.signInWithEmailAndPassword(
       email: email,

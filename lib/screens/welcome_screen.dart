@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'student_register_screen.dart';
+import 'student/student_register_screen.dart';
 import 'tutor_register_screen.dart';
 import 'login_screen.dart';
 
@@ -39,7 +39,7 @@ class WelcomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const TutorRegisterScreen(),
+                        builder: (_) => const RegistroTutorScreen1(),
                       ),
                     );
                   },

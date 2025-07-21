@@ -1,83 +1,172 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:colabu/screens/apoyos_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
-import 'home_screen.dart';
 
-class TutorRegisterScreen extends StatefulWidget {
-  const TutorRegisterScreen({super.key});
+class RegistroTutorScreen1 extends StatefulWidget {
+  const RegistroTutorScreen1({super.key});
 
   @override
-  State<TutorRegisterScreen> createState() => _TutorRegisterScreenState();
+  State<RegistroTutorScreen1> createState() => _RegistroTutorScreen1State();
 }
 
-class _TutorRegisterScreenState extends State<TutorRegisterScreen> {
+class _RegistroTutorScreen1State extends State<RegistroTutorScreen1> {
   final _formKey = GlobalKey<FormState>();
   String nombre = '';
+  String apellido = '';
   String email = '';
   String password = '';
+  String confirmarPassword = '';
+  String? universidad;
+  String? carrera;
+
+  List<String> universidades = [];
+  List<String> carreras = [];
+
   bool cargando = false;
 
-  void _registrarTutor() async {
-    if (!_formKey.currentState!.validate()) return;
-    _formKey.currentState!.save();
+  @override
+  void initState() {
+    super.initState();
+    _cargarDatos();
+  }
 
-    setState(() => cargando = true);
+  Future<void> _cargarDatos() async {
+    final snapshotUniv = await FirebaseFirestore.instance
+        .collection('universidades')
+        .get();
+    final snapshotCarr = await FirebaseFirestore.instance
+        .collection('carreras')
+        .get();
 
-    try {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.registrarTutor(nombre, email, password);
+    setState(() {
+      universidades = snapshotUniv.docs
+          .map((doc) => doc['nombre'] as String)
+          .toList();
+      carreras = snapshotCarr.docs
+          .map((doc) => doc['nombre'] as String)
+          .toList();
+    });
+  }
 
-      Navigator.pushAndRemoveUntil(
+  void _continuar() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      if (password != confirmarPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Las contraseñas no coinciden'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      final datosBasicos = {
+        'nombre': nombre,
+        'apellido': apellido,
+        'universidad': universidad,
+        'carrera': carrera,
+        'email': email,
+        'password': password,
+      };
+
+      Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
+        MaterialPageRoute(
+          builder: (_) => SeleccionarApoyosScreen(datosBasicos: datosBasicos),
+        ),
       );
-    } catch (e) {
-      setState(() => cargando = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registro Tutor')),
+      appBar: AppBar(title: const Text('Registro Tutor - Paso 1')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Nombre'),
-                validator: (val) => val!.isEmpty ? 'Ingrese su nombre' : null,
-                onSaved: (val) => nombre = val!,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Correo'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (val) => val!.isEmpty ? 'Ingrese su correo' : null,
-                onSaved: (val) => email = val!,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Contraseña'),
-                obscureText: true,
-                validator: (val) =>
-                    val!.length < 6 ? 'Mínimo 6 caracteres' : null,
-                onSaved: (val) => password = val!,
-              ),
-              const SizedBox(height: 24),
-              cargando
-                  ? const Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _registrarTutor,
-                      child: const Text('Registrarse'),
+        child: universidades.isEmpty || carreras.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: 'Nombre'),
+                      onSaved: (val) => nombre = val!.trim(),
+                      validator: (val) =>
+                          val!.isEmpty ? 'Ingrese su nombre' : null,
                     ),
-            ],
-          ),
-        ),
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: 'Apellido'),
+                      onSaved: (val) => apellido = val!.trim(),
+                      validator: (val) =>
+                          val!.isEmpty ? 'Ingrese su apellido' : null,
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: universidad,
+                      items: universidades
+                          .map(
+                            (u) => DropdownMenuItem(value: u, child: Text(u)),
+                          )
+                          .toList(),
+                      onChanged: (val) => setState(() => universidad = val),
+                      validator: (val) =>
+                          val == null ? 'Seleccione una universidad' : null,
+                      decoration: const InputDecoration(
+                        labelText: 'Universidad',
+                      ),
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: carrera,
+                      items: carreras
+                          .map(
+                            (c) => DropdownMenuItem(value: c, child: Text(c)),
+                          )
+                          .toList(),
+                      onChanged: (val) => setState(() => carrera = val),
+                      validator: (val) =>
+                          val == null ? 'Seleccione una carrera' : null,
+                      decoration: const InputDecoration(labelText: 'Carrera'),
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Correo institucional',
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      onSaved: (val) => email = val!.trim(),
+                      validator: (val) =>
+                          val!.isEmpty ? 'Ingrese un correo válido' : null,
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Contraseña',
+                      ),
+                      obscureText: true,
+                      onSaved: (val) => password = val!,
+                      validator: (val) => val!.length < 6
+                          ? 'La contraseña debe tener al menos 6 caracteres'
+                          : null,
+                    ),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: 'Confirmar contraseña',
+                      ),
+                      obscureText: true,
+                      onSaved: (val) => confirmarPassword = val!,
+                      validator: (val) =>
+                          val!.isEmpty ? 'Confirme su contraseña' : null,
+                    ),
+                    const SizedBox(height: 24),
+                    // En tu pantalla 1 (RegistroTutorPaso1Screen)
+                    ElevatedButton(
+                      onPressed: _continuar,
+                      child: const Text('Siguiente'),
+                    ),
+                  ],
+                ),
+              ),
       ),
     );
   }

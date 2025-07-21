@@ -1,4 +1,4 @@
-import 'package:colabu/screens/verification_screen.dart';
+import 'package:colabu/screens/student/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;

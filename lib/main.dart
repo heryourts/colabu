@@ -1,4 +1,5 @@
-import 'package:colabu/screens/verification_screen.dart';
+import 'package:colabu/screens/student/verification_screen.dart';
+import 'package:colabu/screens/verification_tutor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         initialRoute: '/welcome', // Puedes cambiar la pantalla inicial
         routes: {
+          '/verificacionTutor': (context) => const VerificacionTutor(),
           '/welcome': (context) => const WelcomeScreen(),
           '/login': (context) => const LoginScreen(),
           '/home': (context) => const HomeScreen(),
