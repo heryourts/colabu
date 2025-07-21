@@ -1,4 +1,4 @@
-package com.example.colabu
+package com.colabuteam.colabu
 
 import io.flutter.embedding.android.FlutterActivity
 
