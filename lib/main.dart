@@ -1,4 +1,5 @@
 import 'package:colabu/providers/estudiante_perfil_provider.dart';
+import 'package:colabu/providers/tutores_provider.dart';
 import 'package:colabu/screens/student/navbar/home_alumno_screen.dart';
 import 'package:colabu/screens/student/register/verification_screen.dart';
 import 'package:colabu/screens/tutor/home_tutor_screen.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => TutoresProvider()),
         ChangeNotifierProvider(create: (_) => EstudiantePerfilProvider()),
       ],
 

@@ -7,6 +7,7 @@ class EstudiantePerfilProvider with ChangeNotifier {
 
   EstudiantePerfil? get perfil => _perfil;
 
+  // Carga todo el perfil desde Firestore
   Future<void> cargarPerfil(String uid) async {
     final doc = await FirebaseFirestore.instance
         .collection('estudiantes')
@@ -14,6 +15,14 @@ class EstudiantePerfilProvider with ChangeNotifier {
         .get();
     if (doc.exists) {
       _perfil = EstudiantePerfil.fromMap(doc.data()!);
+      notifyListeners();
+    }
+  }
+
+  // Actualiza solo la URL de la foto en el perfil local y notifica cambios
+  void actualizarFotoPerfil(String nuevaUrl) {
+    if (_perfil != null) {
+      _perfil = _perfil!.copyWith(fotoUrl: nuevaUrl);
       notifyListeners();
     }
   }
