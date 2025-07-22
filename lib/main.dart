@@ -1,5 +1,8 @@
-import 'package:colabu/screens/student/verification_screen.dart';
-import 'package:colabu/screens/verification_tutor.dart';
+import 'package:colabu/providers/estudiante_perfil_provider.dart';
+import 'package:colabu/screens/student/navbar/home_alumno_screen.dart';
+import 'package:colabu/screens/student/register/verification_screen.dart';
+import 'package:colabu/screens/tutor/home_tutor_screen.dart';
+import 'package:colabu/screens/tutor/registro/verification_tutor.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/login_screen.dart';
-import 'screens/home_screen.dart'; // Importa tu HomeScreen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,16 +39,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => EstudiantePerfilProvider()),
+      ],
+
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: '/welcome', // Puedes cambiar la pantalla inicial
+        initialRoute: '/welcome',
         routes: {
-          '/verificacionTutor': (context) => const VerificacionTutor(),
           '/welcome': (context) => const WelcomeScreen(),
           '/login': (context) => const LoginScreen(),
-          '/home': (context) => const HomeScreen(),
-          '/checkVerification': (context) => const VerificacionScreen(),
+          '/homeAlumno': (context) => const HomeScreenAlumno(),
+          '/homeTutor': (context) => const HomeTutorScreen(),
+          '/verificacionAlumno': (context) =>
+              const VerificacionScreen(), // para alumno
+          '/verificacionTutor': (context) =>
+              const VerificacionTutorScreen(), // para tutor
         },
       ),
     );

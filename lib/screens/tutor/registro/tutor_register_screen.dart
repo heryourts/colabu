@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colabu/screens/apoyos_screen.dart';
+import 'package:colabu/screens/tutor/registro/apoyos_screen.dart';
 import 'package:flutter/material.dart';
 
 class RegistroTutorScreen1 extends StatefulWidget {

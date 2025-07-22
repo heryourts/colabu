@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colabu/screens/etiquetas.dart';
+import 'package:colabu/screens/tutor/registro/etiquetas.dart';
 import 'package:flutter/material.dart';
 
 class SeleccionarApoyosScreen extends StatefulWidget {

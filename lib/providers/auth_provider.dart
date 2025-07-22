@@ -53,31 +53,28 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> iniciarSesion(String email, String password) async {
+  Future<String> iniciarSesion(String email, String password) async {
     final cred = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    // Refrescar el estado del usuario actual para obtener la info más reciente
     final user = _auth.currentUser;
     await user?.reload();
 
     final uid = cred.user!.uid;
 
-    // El resto del código para cargar datos de Firestore...
-
+    // Buscar en colección usuarios
     final docUsuarios = await _db.collection('usuarios').doc(uid).get();
 
     if (docUsuarios.exists) {
       usuarioActual = Usuario.fromMap(docUsuarios.data()!);
-    } else {
-      final docEstudiantes = await _db.collection('estudiantes').doc(uid).get();
+      return usuarioActual!.tipo;
+    }
 
-      if (!docEstudiantes.exists) {
-        throw Exception('Usuario no encontrado en ninguna colección');
-      }
-
+    // Buscar en estudiantes
+    final docEstudiantes = await _db.collection('estudiantes').doc(uid).get();
+    if (docEstudiantes.exists) {
       final data = docEstudiantes.data()!;
       usuarioActual = Usuario(
         uid: uid,
@@ -85,9 +82,25 @@ class AuthProvider with ChangeNotifier {
         nombre: '${data['nombre']} ${data['apellido']}',
         tipo: 'alumno',
       );
+      notifyListeners();
+      return 'alumno';
     }
 
-    notifyListeners();
+    // Buscar en tutores
+    final docTutores = await _db.collection('tutores').doc(uid).get();
+    if (docTutores.exists) {
+      final data = docTutores.data()!;
+      usuarioActual = Usuario(
+        uid: uid,
+        email: data['email'],
+        nombre: '${data['nombre']} ${data['apellido']}',
+        tipo: 'tutor',
+      );
+      notifyListeners();
+      return 'tutor';
+    }
+
+    throw Exception('Usuario no encontrado en ninguna colección');
   }
 
   Future<void> cerrarSesion() async {

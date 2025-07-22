@@ -1,4 +1,3 @@
-import 'package:colabu/screens/student/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
@@ -25,20 +24,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.iniciarSesion(email, password);
+      final tipo = await authProvider.iniciarSesion(email, password);
 
       final user = FirebaseAuth.instance.currentUser;
-      await user?.reload(); // Asegura que el estado esté actualizado
+      await user?.reload();
 
       if (user != null && !user.emailVerified) {
-        // Si no está verificado, ir a pantalla de verificación
-        Navigator.pushReplacement(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(builder: (_) => const VerificacionScreen()),
+          tipo == 'alumno' ? '/verificacionAlumno' : '/verificacionTutor',
         );
       } else {
-        // Si está verificado, ir al home
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(
+          context,
+          tipo == 'alumno' ? '/homeAlumno' : '/homeTutor',
+        );
       }
     } catch (e) {
       setState(() => cargando = false);

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colabu/screens/student/verification_screen.dart';
+import 'package:colabu/screens/student/register/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../providers/auth_provider.dart';
-import '../../../models/universidad.dart';
-import '../../../models/carrera.dart';
+import '../../../../providers/auth_provider.dart';
+import '../../../../models/universidad.dart';
+import '../../../../models/carrera.dart';
 
 class StudentRegisterScreen extends StatefulWidget {
   const StudentRegisterScreen({super.key});
